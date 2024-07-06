@@ -1,0 +1,16 @@
+{
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc --noEmit && vite build",
+        "preview": "vite preview"
+    },
+    "devDependencies": {
+        "@crxjs/vite-plugin": "^1.0.14",
+        "@types/chrome": "^0.0.268",
+        "typescript": "^5.5.2",
+        "vite": "2.9.4"
+    },
+    "dependencies": {
+        "tone": "^15.0.4"
+    }
+}
