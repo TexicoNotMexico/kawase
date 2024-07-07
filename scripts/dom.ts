@@ -5,18 +5,25 @@ export const initializeContentScript = () => {
     const chart = document.querySelector('div[data-attrid="Converter"]');
 
     if (chart) {
-        const currencyValue = "-Infinity";
+        const currencyValue = "0";
         console.log("Exchange rate chart found");
         console.log(chart);
 
         // * 左上のデカい文字
-        editHugeNumberDOM(currencyValue);
+        editHugeNumberDOM(currencyValue, false);
 
         // * 時刻
         editTimeDOM(0, 0);
 
-        // * コントローラ
+        // * 入力欄削除
+        (
+            chart.querySelector("#knowledge-currency__updatable-data-column")?.children[2].children[0] as Element
+        ).innerHTML = "";
 
+        // * グラフ初期化
+        editChartDOM([-Infinity, -Infinity], false);
+
+        // * コントローラ
         const playButton = document.createElement("button");
         playButton.textContent = "Play";
         playButton.addEventListener("click", async () => {
@@ -43,38 +50,39 @@ export const initializeContentScript = () => {
             fileInput.click();
         });
 
-        (chart.querySelector("#knowledge-currency__updatable-data-column") as Element).insertAdjacentElement(
-            "beforeend",
-            playButton
-        );
+        (
+            chart.querySelector("#knowledge-currency__updatable-data-column")?.children[2].children[0] as Element
+        ).appendChild(playButton);
 
-        (chart.querySelector("#knowledge-currency__updatable-data-column") as Element).insertAdjacentElement(
-            "beforeend",
-            loadButton
-        );
+        (
+            chart.querySelector("#knowledge-currency__updatable-data-column")?.children[2].children[0] as Element
+        ).appendChild(loadButton);
     }
 };
 
 export const regularValueChange = () => {
     let levels: number[] = Array.from(toneFFT.getValue());
 
+    let isBadApple = loadStatus[1].toLowerCase().includes("bad apple");
+
     const roundBase = 100;
     const currencyValue = String(Math.round(levels[0] * roundBase) / roundBase);
 
     // * 左上のデカい文字
-    editHugeNumberDOM(currencyValue);
+    editHugeNumberDOM(currencyValue, isBadApple);
 
     // * 時刻
     editTimeDOM(playStatus[1], playStatus[2]);
 
     // * グラフ（ファイル名が Bad Apple!! だと Bad Apple!! の影絵が流れる）
-    editChartDOM(levels, loadStatus[1].toLowerCase().includes("bad apple"));
+    editChartDOM(levels, isBadApple);
 };
 
 // * DOM 操作
-
-const editHugeNumberDOM = (value: string) => {
+const editHugeNumberDOM = (value: string, isBadApple: boolean) => {
     const chart = document.querySelector('div[data-attrid="Converter"]');
+
+    value = isBadApple ? "Bad Apple!!" : value;
 
     if (chart) {
         (chart.querySelector("#knowledge-currency__updatable-data-column")?.children[0] as Element).setAttribute(
